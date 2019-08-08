@@ -1,0 +1,158 @@
+[colors]
+background = #222
+background-alt = #444
+foreground = #f1f1f1
+foreground-alt = #555
+blue = #99edff
+darkblue = #55c6ff
+red = #ff5c57
+green = #59f78e
+yellow = #f3f99c
+pink = #ff69c0
+white = #fcfcfc
+
+[bar/status_bar]
+monitor = ${env:MONITOR}
+bottom = true
+width = 100%
+height = 33
+fixed-center = false
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+line-size = 3
+line-color = ${colors.blue}
+
+module-margin-left = 0
+module-margin-right = 4
+
+font-0 = Product Sans: style=Regular: pixelsize=14
+font-1 = Font Awesome 5 Free: style=Solid: pixelsize=11
+font-2 = Font Awesome 5 Free: style=Regular: pixelsize=11
+font-3 = Font Awesome 5 Brands: pixelsize=11
+font-4 = Material Icons: style=Regular: pixelsize=13; 2
+
+modules-left = powermenu i3 player-mpris-tail 
+;modules-center = 
+modules-right = pulseaudio-control weather date
+
+tray-padding = 2
+tray-background = ${colors.background}
+tray-reparent = true
+tray-position = ${env:TRAY_POS:none}
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+[module/weather]
+type = custom/script
+exec = ~/.config/polybar/scripts/weather.sh
+label = " %output% "
+interval = 1800
+format-underline = ${colors.pink}
+format = %{A1:firefox https\://www.bbc.com/weather/3104324:} <label> %{A}
+
+
+[module/player-mpris-tail]
+type = custom/script
+exec = ~/.config/polybar/scripts/player-mpris-tail.py --icon-playing  --icon-paused  --icon-stopped   -f '%{A1:i3-msg '[class="Spotify"]' scratchpad show:}{:artist:t18:{artist}:}{:artist:: :}{:t40:{title}:}%{A} %{A1:~/.config/polybar/scripts/player-mpris-tail.py previous:}  %{A} %{A1:~/.config/polybar/scripts/player-mpris-tail.py play-pause:} {icon-reversed} %{A} %{A1:~/.config/polybar/scripts/player-mpris-tail.py next:}  %{A}'
+tail = true
+label = " %output% "
+format-underline = ${colors.yellow}
+
+
+[module/i3]
+type = internal/i3
+format = <label-state>
+index-sort = true
+wrapping-scroll = false
+;pin-workspaces = true
+
+label-mode-padding = 2
+label-mode-foreground = #000
+label-mode-background = ${colors.white}
+
+label-focused-background = ${colors.background-alt}
+label-focused-underline = ${colors.white}
+label-focused-padding = 3
+
+label-unfocused-padding = 3
+
+label-visible-background = ${self.label-focused-background}
+label-visible-underline = ${self.label-focused-underline}
+label-visible-padding = ${self.label-focused-padding}
+
+label-urgent-background = ${colors.red}
+label-urgent-padding = 2
+
+
+[module/date]
+type = internal/date
+interval = 5
+
+date = "%a %d %b,"
+time = "%H:%M"
+
+format-prefix = "%{A1:firefox https\://calendar.google.com/:}  %{A}"
+format-suffix = " "
+format-underline = ${colors.green}
+label = " %{A1:firefox https\://calendar.google.com/:}%{A3:gnome-clocks &:}%date% %time%%{A}%{A}"
+
+
+[module/pulseaudio-control]
+type = custom/script
+tail = true
+label = " %output% "
+format-underline = ${colors.blue}
+
+exec = ~/.config/polybar/scripts/pulseaudio-control.sh --listen
+click-right = exec pavucontrol
+click-left = ~/.config/polybar/scripts/pulseaudio-control.sh --togmute
+click-middle = ~/.config/polybar/scripts/pulseaudio-control.sh --change
+scroll-up = ~/.config/polybar/scripts/pulseaudio-control.sh --up
+scroll-down = ~/.config/polybar/scripts/pulseaudio-control.sh --down
+label-padding = 2
+label-foreground = ${colors.foreground}
+
+
+[module/powermenu]
+type = custom/menu
+
+format-foreground = ${colors.foreground}
+format-background = ${colors.background}
+
+; opening
+label-open = "        "
+label-open-font = 4
+label-open-background = ${colors.darkblue}
+label-open-foreground = ${colors.background}
+
+; cancel
+label-close = "     "
+label-close-background = ${colors.darkblue}
+label-close-foreground = ${colors.foreground-alt}
+
+; separator
+label-separator = " / "
+label-separator-background = ${colors.darkblue}
+label-separator-foreground = ${colors.background}
+
+; shutdown
+menu-0-0 = "  "
+menu-0-0-exec = systemctl poweroff
+menu-0-0-background = ${colors.darkblue}
+menu-0-0-foreground = ${colors.background}
+
+; suspend
+menu-0-1 = "  "
+menu-0-1-exec = systemctl suspend
+menu-0-1-background = ${colors.darkblue}
+menu-0-1-foreground = ${colors.background}
+
+; reboot
+menu-0-2 = "     "
+menu-0-2-exec = systemctl reboot
+menu-0-2-background = ${colors.darkblue}
+menu-0-2-foreground = ${colors.background}
+
