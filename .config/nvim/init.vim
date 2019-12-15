@@ -9,13 +9,18 @@ set tabstop=4
 set expandtab
 set cinkeys-=:
 
+" Don't fold anything
+set nofoldenable
+
 " Setting vertical line
-set colorcolumn=86
+set colorcolumn=79
 highlight ColorColumn ctermbg=236
 
-" Floating windows and pmenu colors
+" Special colors
 highlight NormalFloat ctermbg=237
 highlight Pmenu ctermbg=237 ctermfg=255
+highlight SpellBad ctermfg=black
+highlight SpellLocal ctermfg=black
 
 " Sets how many lines of history VIM has to remember
 set history=500
@@ -28,18 +33,15 @@ highlight LineNr ctermfg=darkgrey
 set clipboard=unnamedplus
 autocmd VimLeave * call system("xsel -ib", getreg('+'))
 
-" Netrw: file manager
-let g:netrw_liststyle = 3
-let g:netrw_browse_split = 4
-let g:netrw_altv = 1
-let g:netrw_banner = 0
-let g:netrw_winsize = 15
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | Vexplore | endif
-
+" Open :Term below
+set splitbelow
 
 " ---- COMMANDS ----
 
+command Quickhelp :silent !firefox https://github.com/marioortizmanero/dotfiles/blob/master/README.md
 command Copydir :let @+ = expand("%:p:h")
+command Term :split | resize 13 | term
+command SpellCheck :set spell spelllang=en_us
 
 
 " ---- BINDINGS ----
@@ -53,6 +55,31 @@ noremap <S-Up> <Up>
 noremap <S-Down> <Down>
 noremap <S-Left> <Left>
 noremap <S-Right> <Right>
+" Quick terminal command
+noremap ,t :Term<CR>
+" Quick refresh command
+noremap ,r :edit<CR>
+" Exit terminal insert mode with Esc
+tnoremap <Esc> <C-\><C-n>
+" Indentation type toggle
+noremap ,i :exec TabToggle()<CR>
+function TabToggle()
+  if &expandtab
+    set shiftwidth=4
+    set softtabstop=0
+    set noexpandtab
+  else
+    set shiftwidth=4
+    set softtabstop=4
+    set expandtab
+  endif
+endfunction
+" Toggle for showing numbers
+noremap ,n :set nu!<CR>
+" Showing the colorcolumn at 120 characters
+noremap ,l :set colorcolumn=120<CR>
+" Make shortcuts
+noremap ,m :make<CR>
 
 
 " ---- PLUGINS ----
@@ -72,19 +99,19 @@ inoremap <silent><expr> <Tab>
 call plug#begin('~/.vim/plugged')
 
 " coc.nvim: autocompletion
-" plug-ins: coc-python, coc-css, coc-json, coc-html
+" plug-ins: coc-python, coc-css, coc-json, coc-html, coc-phpls
 " linters: ccls (AUR)
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " vim-gitgutter: git diff symbols to the left
 Plug 'airblade/vim-gitgutter'
 " lightline: improved status bar
 Plug 'itchyny/lightline.vim'
-" vim-vinegar: improvements for netrw
-Plug 'tpope/vim-vinegar'
 " vim-grip: live markdown preview
 Plug 'PratikBhusal/vim-grip'
 " nerdcommenter: comment and uncomment easily
 Plug 'scrooloose/nerdcommenter'
+" nerdtree: file manager
+Plug 'scrooloose/nerdtree'
 
 call plug#end()
 
@@ -93,8 +120,17 @@ let NERDSpaceDelims=1
 noremap ,c :call NERDComment(0,'Toggle')<CR>
 
 " Lightline
+set noshowmode
 set laststatus=2
 
 " GitGutter
 set updatetime=300
 
+" NERDTree
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter *
+    \ if (argc() == 0 && !exists("s:std_in")) || isdirectory(expand('%'))
+        \ | NERDTree |
+    \ endif
+let NERDTreeShowHidden=1
+let NERDTreeWinSize=25
